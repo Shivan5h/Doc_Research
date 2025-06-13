@@ -1,261 +1,217 @@
-Document Research & Theme Identification Chatbot
-A web-based chatbot that ingests 75+ documents (PDFs, images, text), answers user queries with precise paragraph-level citations, and identifies common themes across documents. Built with FastAPI, Streamlit, OpenAI, ChromaDB, and Tesseract OCR, optimized with parallel processing and caching for performance.
-Table of Contents
+# 📄 Document Research & Theme Identification Chatbot
 
-Features
-Tech Stack
-Prerequisites
-Installation
-Running Locally
-Deployment on Streamlit Community Cloud
-Usage
-Project Structure
-Dataset
-Performance Optimizations
-Limitations
-Future Improvements
-Contributing
-License
+A web-based chatbot that ingests 75+ documents (PDFs, images, and text), answers user queries with precise paragraph-level citations, and identifies common themes across documents.
 
-Features
+---
 
-Document Upload: Supports 75+ documents (PDFs, images [.png, .jpg, .jpeg], text) with OCR for scanned images.
-Query Processing: Natural language queries with answers extracted from documents, including paragraph-level citations (e.g., "Page 4, Para 2").
-Theme Identification: Summarizes common themes across document answers with supporting citations.
-Web Interface: Streamlit UI for uploading files, viewing documents, querying, and excluding specific documents from searches.
-Performance: Parallel processing for uploads and queries, caching for repeated operations, and async API calls.
-Extra Features: Document exclusion, tabular answer display, and progress feedback for uploads.
+## 🧠 Features
 
-Tech Stack
+* **Document Upload**: Supports 75+ documents (PDFs, images \[.png, .jpg, .jpeg], text) with OCR for scanned images.
+* **Query Processing**: Natural language queries return extracted answers from documents with paragraph-level citations (e.g., *"Page 4, Para 2"*).
+* **Theme Identification**: Identifies common themes across answers with supporting citations.
+* **Web Interface**: Built with Streamlit for uploading, querying, and excluding documents from search.
+* **Performance Optimization**: Parallel processing, caching, and asynchronous API calls.
+* **Extra Features**: Tabular answer display, document exclusion, upload progress bar, and spinners for query loading.
 
-Backend: FastAPI (Python) for API endpoints.
-Frontend: Streamlit for the web interface.
-LLM: OpenAI GPT-4o-mini for theme identification.
-Vector Search: ChromaDB with SentenceTransformer embeddings.
-OCR: Tesseract for extracting text from images.
-Dependencies: PyPDF2, Pillow, httpx, concurrent.futures.
-Deployment: Streamlit Community Cloud (frontend), Render (backend).
+---
 
-Prerequisites
+## 🛠️ Tech Stack
 
-Python: 3.9+
-Tesseract OCR: Installed and accessible in system PATH.
-OpenAI API Key: Obtain from OpenAI.
-Git: For version control.
-Streamlit Community Cloud Account: Sign up at Streamlit Community Cloud.
-Render Account: Sign up at Render for backend deployment.
+| Component       | Technology                                             |
+| --------------- | ------------------------------------------------------ |
+| **Backend**     | FastAPI                                                |
+| **Frontend**    | Streamlit                                              |
+| **LLM**         | OpenAI GPT-4o-mini                                     |
+| **Vector DB**   | ChromaDB (SentenceTransformer embeddings)              |
+| **OCR Engine**  | Tesseract OCR                                          |
+| **Other Tools** | PyPDF2, Pillow, httpx, concurrent.futures              |
+| **Deployment**  | Streamlit Community Cloud (Frontend), Render (Backend) |
 
-Installation
+---
 
-Clone the Repository:
+## ✅ Prerequisites
+
+* Python 3.9+
+* [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) installed and added to system PATH
+* OpenAI API Key
+* Git
+* Streamlit Community Cloud account
+
+---
+
+## 🚀 Installation
+
+```bash
+# Clone the repository
 git clone https://github.com/Shivan5h/Doc-Research.git
 cd Doc-Research
 
+# Install Tesseract OCR
+# Ubuntu:
+sudo apt-get install tesseract-ocr
+# macOS:
+brew install tesseract
+# Windows:
+# Download from https://github.com/tesseract-ocr/tesseract and add to PATH
 
-Install Tesseract OCR:
-
-Ubuntu: sudo apt-get install tesseract-ocr
-macOS: brew install tesseract
-Windows: Download from Tesseract GitHub and add to PATH.
-
-
-Install Python Dependencies:
+# Install Python dependencies
 pip install -r requirements.txt
 
-
-Set Environment Variables:
+# Set environment variables
 export OPENAI_API_KEY='your-api-key'
-export BACKEND_URL='http://localhost:8000'
+export BACKEND_URL='http://localhost:8000'  # Use `set` on Windows
+```
 
-On Windows, use set instead of export.
+---
 
+## 💻 Running Locally
 
-Running Locally
+### Start the Backend (FastAPI):
 
-Start the FastAPI Backend:
+```bash
 uvicorn main:app --host 0.0.0.0 --port 8000
+```
 
+### Start the Frontend (Streamlit):
 
-Start the Streamlit Frontend (in a new terminal):
+```bash
 streamlit run app.py
+```
 
+Open [http://localhost:8501](http://localhost:8501) in your browser.
 
-Access the App:
+---
 
-Open http://localhost:8501 in your browser for the Streamlit UI.
-The backend runs on http://localhost:8000.
+## 🌐 Deployment
 
+### 1. Deploy FastAPI Backend on Render
 
+* Push your project to GitHub.
+* Create a web service on [Render](https://render.com/):
 
-Deployment on Streamlit Community Cloud
-Streamlit Community Cloud hosts the Streamlit frontend, but the FastAPI backend requires a separate service like Render due to Streamlit's limitations with non-Streamlit apps.
-Deploy FastAPI Backend (on Render)
+  * **Runtime**: Python 3
+  * **Build Command**: `pip install -r requirements.txt`
+  * **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+  * **Environment Variable**: `OPENAI_API_KEY=your-api-key`
+* Note your Render backend URL (e.g., `https://your-backend.onrender.com`).
 
-Push to GitHub:
+### 2. Update Streamlit Frontend
 
-Ensure your repository includes main.py, requirements.txt, and other necessary files.
-Push to GitHub:git add .
-git commit -m "Prepare for deployment"
-git push origin main
+In `app.py`:
 
-
-
-
-Set Up Render:
-
-Create a new web service on Render.
-Select your GitHub repository.
-Configure:
-Runtime: Python 3
-Build Command: pip install -r requirements.txt
-Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
-
-
-Add environment variable: OPENAI_API_KEY=your-api-key.
-Deploy and note the backend URL (e.g., https://your-backend.onrender.com).
-
-
-Update app.py:
-
-Modify app.py to use the Render backend URL and environment variables:import os
+```python
+import os
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
-# Example API call
+```
+
+Replace API URLs with dynamic usage:
+
+```python
 response = client.get(f"{BACKEND_URL}/documents")
+```
 
+### 3. Deploy Streamlit on Community Cloud
 
-Update all API calls in app.py to use BACKEND_URL.
+* Ensure `app.py` and `requirements.txt` are in the root directory.
+* Push updates to GitHub.
+* On [Streamlit Community Cloud](https://streamlit.io/cloud), create a new app from your GitHub repo.
+* Set environment variables:
 
+  * `OPENAI_API_KEY=your-api-key`
+  * `BACKEND_URL=https://your-backend.onrender.com`
 
+---
 
-Deploy Streamlit Frontend
+## 📦 Usage
 
-Prepare for Streamlit Cloud:
+1. **Upload**: Drag-and-drop PDFs, text, or image files into the uploader.
+2. **Query**: Enter natural language questions (e.g., *"What are the penalties for non-compliance?"*).
+3. **Exclude**: Optionally exclude specific documents.
+4. **Results**:
 
-Ensure app.py, requirements.txt, and other files are in the repository root.
-Update app.py to use environment variables for the backend URL and OpenAI API key (already implemented in the optimized version).
-Commit and push changes to GitHub:git add app.py
-git commit -m "Update app.py for environment variables"
-git push origin main
+   * Individual Answers: Table showing document ID, filename, answer, and citation.
+   * Themes: Summarized in chat format with references.
 
+#### Example Output
 
+**Answers Table:**
 
+| Document ID | Filename  | Extracted Answer                          | Citation       |
+| ----------- | --------- | ----------------------------------------- | -------------- |
+| DOC001      | case1.pdf | The fine was imposed under section 15...  | Page 4, Para 2 |
+| DOC002      | case2.pdf | Delay in disclosure violated Clause 49... | Page 2, Para 1 |
 
-Deploy on Streamlit Community Cloud:
+**Themes:**
 
-Log in to Streamlit Community Cloud.
-Create a new app, selecting your GitHub repository.
-Specify app.py as the main file.
-Set environment variables in Streamlit Cloud's app settings:
-OPENAI_API_KEY=your-api-key
-BACKEND_URL=https://your-backend.onrender.com
+* **Theme 1 – Regulatory Non-Compliance**: DOC001, DOC002 (SEBI Act, LODR)
+* **Theme 2 – Penalty Justification**: DOC001 (Section 15, Para 2)
 
+---
 
-Deploy the app. The UI will be accessible via a URL like https://your-app.streamlit.app.
+## 📁 Project Structure
 
-
-Test the Deployment:
-
-Verify that the Streamlit app communicates with the Render backend.
-Upload documents and test queries to ensure functionality.
-
-
-
-Usage
-
-Upload Documents:
-Use the Streamlit UI to upload PDFs, images (.png, .jpg, .jpeg), or text files.
-A progress bar tracks upload status.
-
-
-View Documents:
-Uploaded documents are listed in a table with Document ID and Filename.
-
-
-Ask Questions:
-Enter a natural language query (e.g., "What are the penalties for non-compliance?").
-Optionally exclude specific documents using the multiselect dropdown.
-
-
-View Results:
-Individual Answers: Displayed in a table with Document ID, Filename, Extracted Answer, and Citation.
-Themes: Summarized in a chat-style format with supporting citations.
-
-
-
-Example Output:
-
-Table:
-
-
-Document ID
-Filename
-Extracted Answer
-Citation
-
-
-
-DOC001
-case1.pdf
-The fine was imposed under section 15...
-Page 4, Para 2
-
-
-DOC002
-case2.pdf
-Delay in disclosure violated Clause 49...
-Page 2, Para 1
-
-
-
-Themes:Theme 1 – Regulatory Non-Compliance:
-- DOC001, DOC002: Highlight non-compliance with SEBI Act and LODR (Page 4, Para 2; Page 2, Para 1).
-Theme 2 – Penalty Justification:
-- DOC001: Explicit justification of penalties (Page 4, Para 2).
-
-
-
-Project Structure
+```
 doc-research-chatbot/
-├── main.py              # FastAPI backend for document upload and query processing
-├── app.py               # Streamlit frontend for UI
-├── requirements.txt     # Python dependencies
-├── uploads/             # Directory for uploaded files
-├── chroma_db/           # ChromaDB persistence directory
-└── README.md            # Project documentation
+├── app.py              # Streamlit frontend
+├── main.py             # FastAPI backend
+├── requirements.txt    # Python dependencies
+├── uploads/            # Stores uploaded files
+├── chroma_db/          # ChromaDB storage
+└── README.md           # Project documentation
+```
 
-Dataset
+---
 
-Recommended: Use publicly available legal case PDFs from court websites (e.g., Indian Supreme Court, US Federal Courts) or synthetic legal documents.
-Testing: Generate synthetic PDFs with tools like reportlab or download sample legal texts from open datasets.
-Formats: Supports PDFs, images (.png, .jpg, .jpeg), and plain text (.txt).
+## 📚 Dataset Recommendations
 
-Performance Optimizations
+* **Legal PDFs** from court websites (Indian Supreme Court, US Federal Courts)
+* **Synthetic documents** using `reportlab` or open-source legal text datasets
+* Supported formats: `.pdf`, `.png`, `.jpg`, `.jpeg`, `.txt`
 
-Parallel Processing: Uses ThreadPoolExecutor for concurrent document uploads and query searches, reducing I/O wait times.
-Caching: Streamlit's @st.cache_data caches document lists and query results to avoid redundant API calls.
-Async API Calls: httpx enables asynchronous HTTP requests for faster backend communication.
-Progress Feedback: Progress bar for uploads and spinner for queries improve user experience.
-Efficient Vector Search: ChromaDB with SentenceTransformer embeddings ensures fast semantic search.
+---
 
-Limitations
+## ⚡ Performance Optimizations
 
-OCR Performance: Tesseract OCR may struggle with low-quality scans or complex layouts. Cloud-based OCR (e.g., Google Vision) could improve accuracy.
-Backend Hosting: Streamlit Community Cloud cannot host FastAPI directly, requiring a separate service like Render.
-Scalability: ChromaDB is suitable for small to medium datasets. For thousands of documents, consider Qdrant or a distributed vector store.
-Theme Identification: Relies on OpenAI's LLM, which may introduce latency or costs for high query volumes.
+* **Parallel Uploads & Queries**: `ThreadPoolExecutor`
+* **Caching**: `@st.cache_data` in Streamlit for results and document metadata
+* **Asynchronous Calls**: via `httpx` to backend
+* **Efficient Search**: ChromaDB + SentenceTransformers for fast semantic retrieval
+* **Progress Feedback**: Upload bar and spinner for user experience
 
-Future Improvements
+---
 
-Advanced Filtering: Add sorting by date, author, or document type by extending ChromaDB metadata.
-Visual Citation Mapping: Implement clickable links from themes to document excerpts.
-Cloud OCR Integration: Replace Tesseract with Google Vision or AWS Textract for better OCR accuracy.
-Distributed Search: Use Qdrant for larger-scale vector search.
-Authentication: Add user authentication for multi-user support.
+## ⚠️ Limitations
 
-Contributing
+* **OCR Quality**: Tesseract may fail on low-res or skewed images. Consider Google Vision or AWS Textract for production.
+* **Scalability**: ChromaDB works best for small to medium datasets; Qdrant is recommended for larger corpora.
+* **Hosting**: FastAPI backend requires external host (Render), as Streamlit Cloud only supports frontend.
 
-Fork the repository.
-Create a feature branch (git checkout -b feature/your-feature).
-Commit changes (git commit -m "Add your feature").
-Push to the branch (git push origin feature/your-feature).
-Open a pull request with detailed descriptions.
+---
+
+## 🌱 Future Improvements
+
+* Document sorting & filtering by metadata (date, type, author)
+* Visual citations linked to document sections
+* Replace Tesseract with advanced OCR (Google Vision, AWS Textract)
+* Switch to Qdrant or Weaviate for large-scale vector search
+* Add authentication for multi-user access
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository.
+2. Create a feature branch:
+
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+3. Commit your changes:
+
+   ```bash
+   git commit -m "Add your feature"
+   ```
+4. Push and open a pull request.
+
+---
+
